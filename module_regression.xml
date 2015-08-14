@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_regression" default="compile.module.regression">
+  <dirname property="module.regression.basedir" file="${ant.file.module_regression}"/>
+  
+  <property name="module.jdk.home.regression" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.regression" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.regression" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.regression" value="${compiler.args}"/>
+  
+  <property name="regression.output.dir" value="${module.regression.basedir}/out/production/regression"/>
+  <property name="regression.testoutput.dir" value="${module.regression.basedir}/out/test/regression"/>
+  
+  <path id="regression.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="regression.module.production.classpath">
+    <path refid="${module.jdk.classpath.regression}"/>
+    <pathelement location="${basedir}/../log4j-1.2.17.jar"/>
+    <pathelement location="${basedir}/../hadoop-0.21.0-streaming.jar"/>
+    <pathelement location="${basedir}/../hadoop-common-0.21.0.jar"/>
+    <pathelement location="${basedir}/../hadoop-0.18.0-core.jar"/>
+    <pathelement location="${basedir}/../hadoop-core-0.20.2.jar"/>
+    <pathelement location="${basedir}/../mtj.jar"/>
+    
+    <pathelement location="${basedir}/../commons-logging-1.1.3-bin/commons-logging-1.1.3/commons-logging-1.1.3.jar"/>
+    <pathelement location="${basedir}/../com.google.common_1.0.0.201004262004.jar"/>
+    <pathelement location="${basedir}/../Jama-1.0.1.jar"/>
+  </path>
+  
+  <path id="regression.runtime.production.module.classpath">
+    <pathelement location="${regression.output.dir}"/>
+    <pathelement location="${basedir}/../log4j-1.2.17.jar"/>
+    <pathelement location="${basedir}/../hadoop-0.21.0-streaming.jar"/>
+    <pathelement location="${basedir}/../hadoop-common-0.21.0.jar"/>
+    <pathelement location="${basedir}/../hadoop-0.18.0-core.jar"/>
+    <pathelement location="${basedir}/../hadoop-core-0.20.2.jar"/>
+    <pathelement location="${basedir}/../mtj.jar"/>
+    
+    <pathelement location="${basedir}/../commons-logging-1.1.3-bin/commons-logging-1.1.3/commons-logging-1.1.3.jar"/>
+    <pathelement location="${basedir}/../com.google.common_1.0.0.201004262004.jar"/>
+    <pathelement location="${basedir}/../Jama-1.0.1.jar"/>
+  </path>
+  
+  <path id="regression.module.classpath">
+    <path refid="${module.jdk.classpath.regression}"/>
+    <pathelement location="${regression.output.dir}"/>
+    <pathelement location="${basedir}/../log4j-1.2.17.jar"/>
+    <pathelement location="${basedir}/../hadoop-0.21.0-streaming.jar"/>
+    <pathelement location="${basedir}/../hadoop-common-0.21.0.jar"/>
+    <pathelement location="${basedir}/../hadoop-0.18.0-core.jar"/>
+    <pathelement location="${basedir}/../hadoop-core-0.20.2.jar"/>
+    <pathelement location="${basedir}/../mtj.jar"/>
+    
+    <pathelement location="${basedir}/../commons-logging-1.1.3-bin/commons-logging-1.1.3/commons-logging-1.1.3.jar"/>
+    <pathelement location="${basedir}/../com.google.common_1.0.0.201004262004.jar"/>
+    <pathelement location="${basedir}/../Jama-1.0.1.jar"/>
+  </path>
+  
+  <path id="regression.runtime.module.classpath">
+    <pathelement location="${regression.testoutput.dir}"/>
+    <pathelement location="${regression.output.dir}"/>
+    <pathelement location="${basedir}/../log4j-1.2.17.jar"/>
+    <pathelement location="${basedir}/../hadoop-0.21.0-streaming.jar"/>
+    <pathelement location="${basedir}/../hadoop-common-0.21.0.jar"/>
+    <pathelement location="${basedir}/../hadoop-0.18.0-core.jar"/>
+    <pathelement location="${basedir}/../hadoop-core-0.20.2.jar"/>
+    <pathelement location="${basedir}/../mtj.jar"/>
+    
+    <pathelement location="${basedir}/../commons-logging-1.1.3-bin/commons-logging-1.1.3/commons-logging-1.1.3.jar"/>
+    <pathelement location="${basedir}/../com.google.common_1.0.0.201004262004.jar"/>
+    <pathelement location="${basedir}/../Jama-1.0.1.jar"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.regression">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.regression">
+    <patternset refid="excluded.from.module.regression"/>
+  </patternset>
+  
+  <path id="regression.module.sourcepath">
+    <dirset dir="${module.regression.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.regression" depends="compile.module.regression.production,compile.module.regression.tests" description="Compile module regression"/>
+  
+  <target name="compile.module.regression.production" depends="register.custom.compilers" description="Compile module regression; production classes">
+    <mkdir dir="${regression.output.dir}"/>
+    <javac2 destdir="${regression.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.regression}/javac">
+      <compilerarg line="${compiler.args.regression}"/>
+      <bootclasspath refid="regression.module.bootclasspath"/>
+      <classpath refid="regression.module.production.classpath"/>
+      <src refid="regression.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.regression"/>
+    </javac2>
+    
+    <copy todir="${regression.output.dir}">
+      <fileset dir="${module.regression.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.regression.tests" depends="register.custom.compilers,compile.module.regression.production" description="compile module regression; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.regression" description="cleanup module">
+    <delete dir="${regression.output.dir}"/>
+    <delete dir="${regression.testoutput.dir}"/>
+  </target>
+</project>

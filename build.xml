@@ -1,0 +1,60 @@
+<project name="tsqr-hadoop" default="jar">
+  <property environment="env"/>
+  <property name="build.dir" value="./build"/>
+  <property name="src.dir" value="./src" />
+  
+  <property name="classes.dir" value="${build.dir}/classes" />
+  <property name="jar.dir" value="/home/hduser/lib/jar" />
+  
+  <target name="init">
+    <fail message="Please set the environment variable HADOOP_INSTALL">
+      <condition>
+        <not><isset property="env.HADOOP_INSTALL" /></not>
+      </condition>
+    </fail>
+  </target>
+
+  <path id="classpath">
+    <pathelement location="${classes.dir}" />
+    <fileset dir="/usr/local/hadoop">
+      <include name="*.jar" />
+      <include name="lib/**/*.jar" />
+      <include name="contrib/streaming/*.jar" />
+      <include name="mapred/contrib/streaming/*.jar" />
+    </fileset>
+    <pathelement location="/home/hduser/lib/weka-3.7.3.jar" />
+    <pathelement location="/home/hduser/lib/mtj.jar" />
+    <pathelement location="/home/hduser/lib/netlib-java-0.9.2.jar" />
+    <pathelement location="/home/hduser/lib/arpack_combined_all.jar" />
+    <pathelement location="/home/hduser/lib/hadoop-common-0.21.0.jar" />
+    <pathelement location="/home/hduser/lib/com.google.common_1.0.0.201004262004.jar" />
+    <pathelement location="/home/hduser/lib/Jama-1.0.1.jar" />
+    <pathelement location="/home/hduser/lib/opencsv-2.1-1.0.0.jar" />
+
+   </path>
+
+  <target name="compile">
+    <mkdir dir="${classes.dir}"/>
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"/>
+  </target>
+
+  <target name="jar" depends="compile">
+    <mkdir dir="${jar.dir}"/>
+    <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+      <zipfileset includes="**/*.class" src="/home/hduser/lib/mtj.jar"/>
+      <zipfileset includes="**/*.class" src="/home/hduser/lib/netlib-java-0.9.2.jar" />
+      <zipfileset includes="**/*.class" src="/home/hduser/lib/arpack_combined_all.jar" />
+      <zipfileset includes="**/*.class" src="/home/hduser/lib/hadoop-0.21.0-streaming.jar" />
+      <zipfileset includes="**/*.class" src="/home/hduser/lib/hadoop-core-0.20.2.jar" />
+      <zipfileset includes="**/*.class" src="/home/hduser/lib/hadoop-common-0.21.0.jar" />
+      <zipfileset includes="**/*.class" src="/home/hduser/lib/com.google.common_1.0.0.201004262004.jar" />
+      <zipfileset includes="**/*.class" src="/home/hduser/lib/Jama-1.0.1.jar" />
+      <zipfileset includes="**/*.class" src="/home/hduser/lib/weka-3.7.3.jar" />
+      <zipfileset includes="**/*.class" src="/home/hduser/lib/opencsv-2.1-1.0.0.jar" />
+    </jar>
+  </target>
+
+  <target name="clean">
+    <delete dir="${classes.dir}"/>
+  </target>
+</project>
